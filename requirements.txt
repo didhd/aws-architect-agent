@@ -1,4 +1,8 @@
-langchain
-langgraph
-openai
-pyyaml
+langchain==0.2.11
+langchain-aws==0.1.12
+langchain-core==0.2.23
+langchain-text-splitters==0.2.2
+langgraph==0.1.14
+openai==1.37.1
+python-dotenv==1.0.1
+streamlit==1.37.0
