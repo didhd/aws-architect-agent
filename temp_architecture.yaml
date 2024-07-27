@@ -1,0 +1,118 @@
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - AWSCloud
+        - User
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Direction: vertical
+      Preset: AWSCloudNoLogo
+      Align: center
+      Children:
+        - VPC
+        - IGW
+    # VPC
+    VPC:
+      Type: AWS::EC2::VPC
+      Direction: vertical
+      Children:
+        - VPCPublicStack
+        - VPCPrivateStack
+        - ALB
+    VPCPublicStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - VPCPublicSubnet1
+        - VPCPublicSubnet2
+    VPCPublicSubnet1:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Children:
+        - VPCPublicSubnet1Instance
+    VPCPublicSubnet1Instance:
+      Type: AWS::EC2::Instance
+    VPCPublicSubnet2:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Children:
+        - VPCPublicSubnet2Instance
+    VPCPublicSubnet2Instance:
+      Type: AWS::EC2::Instance
+    VPCPrivateStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - VPCPrivateSubnet1
+        - VPCPrivateSubnet2
+    VPCPrivateSubnet1:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Children:
+        - VPCPrivateSubnet1Instance
+        - RDS
+    VPCPrivateSubnet1Instance:
+      Type: AWS::EC2::Instance
+    VPCPrivateSubnet2:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Children:
+        - VPCPrivateSubnet2Instance
+        - S3
+    VPCPrivateSubnet2Instance:
+      Type: AWS::EC2::Instance
+    ALB:
+      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+      Preset: Application Load Balancer
+    RDS:
+      Type: AWS::RDS::DBInstance
+    S3:
+      Type: AWS::S3::Bucket
+    IGW:
+      Type: AWS::EC2::InternetGateway
+    User:
+      Type: AWS::Diagram::Resource
+      Preset: User
+
+  Links:
+    - Source: ALB
+      SourcePosition: NNW
+      Target: VPCPublicSubnet1Instance
+      TargetPosition: SSE
+      TargetArrowHead:
+        Type: Open
+    - Source: ALB
+      SourcePosition: NNE
+      Target: VPCPublicSubnet2Instance
+      TargetPosition: SSW
+      TargetArrowHead:
+        Type: Open
+    - Source: VPCPublicSubnet1Instance
+      SourcePosition: E
+      Target: VPCPrivateSubnet1Instance
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+    - Source: VPCPublicSubnet2Instance
+      SourcePosition: W
+      Target: VPCPrivateSubnet2Instance
+      TargetPosition: E
+      TargetArrowHead:
+        Type: Open
+    - Source: IGW
+      SourcePosition: N
+      Target: ALB
+      TargetPosition: S
+      TargetArrowHead:
+        Type: Open
+    - Source: User
+      SourcePosition: N
+      Target: IGW
+      TargetPosition: S
+      TargetArrowHead:
+        Type: Open
