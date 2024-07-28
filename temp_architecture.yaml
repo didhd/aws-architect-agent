@@ -17,102 +17,65 @@ Diagram:
       Align: center
       Children:
         - VPC
-        - IGW
-    # VPC
     VPC:
       Type: AWS::EC2::VPC
-      Direction: vertical
+      Direction: horizontal
       Children:
-        - VPCPublicStack
-        - VPCPrivateStack
-        - ALB
-    VPCPublicStack:
-      Type: AWS::Diagram::HorizontalStack
+        - CognitoStack
+        - APIGatewayStack
+        - DynamoDBStack
+    CognitoStack:
+      Type: AWS::Diagram::VerticalStack
       Children:
-        - VPCPublicSubnet1
-        - VPCPublicSubnet2
-    VPCPublicSubnet1:
-      Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
+        - Cognito
+    Cognito:
+      Type: AWS::Cognito::UserPool
+      Preset: User Pool
+    APIGatewayStack:
+      Type: AWS::Diagram::VerticalStack
       Children:
-        - VPCPublicSubnet1Instance
-    VPCPublicSubnet1Instance:
-      Type: AWS::EC2::Instance
-    VPCPublicSubnet2:
-      Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
+        - APIGateway
+        - Lambda
+    APIGateway:
+      Type: AWS::ApiGateway::RestApi
+      Preset: API Gateway
+    Lambda:
+      Type: AWS::Lambda::Function
+      Preset: Lambda
+    DynamoDBStack:
+      Type: AWS::Diagram::VerticalStack
       Children:
-        - VPCPublicSubnet2Instance
-    VPCPublicSubnet2Instance:
-      Type: AWS::EC2::Instance
-    VPCPrivateStack:
-      Type: AWS::Diagram::HorizontalStack
-      Children:
-        - VPCPrivateSubnet1
-        - VPCPrivateSubnet2
-    VPCPrivateSubnet1:
-      Type: AWS::EC2::Subnet
-      Preset: PrivateSubnet
-      Children:
-        - VPCPrivateSubnet1Instance
-        - RDS
-    VPCPrivateSubnet1Instance:
-      Type: AWS::EC2::Instance
-    VPCPrivateSubnet2:
-      Type: AWS::EC2::Subnet
-      Preset: PrivateSubnet
-      Children:
-        - VPCPrivateSubnet2Instance
-        - S3
-    VPCPrivateSubnet2Instance:
-      Type: AWS::EC2::Instance
-    ALB:
-      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-      Preset: Application Load Balancer
-    RDS:
-      Type: AWS::RDS::DBInstance
-    S3:
-      Type: AWS::S3::Bucket
-    IGW:
-      Type: AWS::EC2::InternetGateway
+        - DynamoDB
+    DynamoDB:
+      Type: AWS::DynamoDB::Table
+      Preset: DynamoDB
+
     User:
       Type: AWS::Diagram::Resource
       Preset: User
 
   Links:
-    - Source: ALB
-      SourcePosition: NNW
-      Target: VPCPublicSubnet1Instance
-      TargetPosition: SSE
+    - Source: User
+      SourcePosition: N
+      Target: Cognito
+      TargetPosition: S
       TargetArrowHead:
         Type: Open
-    - Source: ALB
-      SourcePosition: NNE
-      Target: VPCPublicSubnet2Instance
-      TargetPosition: SSW
-      TargetArrowHead:
-        Type: Open
-    - Source: VPCPublicSubnet1Instance
+    - Source: Cognito
       SourcePosition: E
-      Target: VPCPrivateSubnet1Instance
+      Target: APIGateway
       TargetPosition: W
       TargetArrowHead:
         Type: Open
-    - Source: VPCPublicSubnet2Instance
-      SourcePosition: W
-      Target: VPCPrivateSubnet2Instance
-      TargetPosition: E
+    - Source: APIGateway
+      SourcePosition: E
+      Target: Lambda
+      TargetPosition: W
       TargetArrowHead:
         Type: Open
-    - Source: IGW
-      SourcePosition: N
-      Target: ALB
-      TargetPosition: S
-      TargetArrowHead:
-        Type: Open
-    - Source: User
-      SourcePosition: N
-      Target: IGW
-      TargetPosition: S
+    - Source: Lambda
+      SourcePosition: E
+      Target: DynamoDB
+      TargetPosition: W
       TargetArrowHead:
         Type: Open

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: aws-architect-app
-        image: <your-docker-repo>/aws-architect-app:latest
+        image: 269550163595.dkr.ecr.ap-northeast-2.amazonaws.com/aws-architect-agent:latest
         ports:
         - containerPort: 8080
         env:

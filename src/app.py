@@ -71,7 +71,6 @@ user_question = st.text_area(
 
 if st.button("아키텍처 생성"):
     if user_question:
-        progress_bar = st.progress(0)
         status_text = st.empty()
         yaml_expander = st.expander("YAML 내용", expanded=False)
         diagram_container = st.empty()
@@ -90,36 +89,28 @@ if st.button("아키텍처 생성"):
                         break
 
                     if "yaml_content" in status:
-                        with st.spinner("AWS 아키텍처 YAML 생성 중..."):
-                            yaml_expander.code(status["yaml_content"], language="yaml")
-                            status_text.text("AWS 아키텍처 YAML 생성 완료")
-                            progress_bar.progress(0.33)
+                        status_text.text("AWS 아키텍처 YAML 생성 중...")
+                        yaml_expander.code(status["yaml_content"], language="yaml")
+                        status_text.text("AWS 아키텍처 YAML 생성 완료")
 
                     if "architecture_explanation" in status:
-                        with st.spinner("아키텍처 설명 생성 중..."):
-                            explanation_container.markdown("### 아키텍처 설명")
-                            explanation_container.write(
-                                status["architecture_explanation"]
-                            )
-                            status_text.text("아키텍처 설명 생성 완료")
-                            progress_bar.progress(0.66)
+                        status_text.text("아키텍처 설명 생성 중...")
+                        explanation_container.markdown("### 아키텍처 설명")
+                        explanation_container.write(status["architecture_explanation"])
+                        status_text.text("아키텍처 설명 생성 완료")
 
                     if status.get("diagram_generated"):
-                        with st.spinner("아키텍처 다이어그램 생성 중..."):
-                            diagram_container.image(
-                                "output.png", caption="생성된 아키텍처 다이어그램"
-                            )
-                            status_text.text("아키텍처 다이어그램 생성 완료")
-                            progress_bar.progress(0.8)
+                        status_text.text("아키텍처 다이어그램 생성 중...")
+                        diagram_container.image(
+                            "output.png", caption="생성된 아키텍처 다이어그램"
+                        )
+                        status_text.text("아키텍처 다이어그램 생성 완료")
 
                     if status.get("validation_result"):
-                        with st.spinner("아키텍처 설계 검증 중..."):
-                            validation_container.markdown(
-                                "### 설계 검증 결과 및 개선 제안"
-                            )
-                            validation_container.write(status["validation_result"])
-                            status_text.text("아키텍처 설계 검증 완료")
-                            progress_bar.progress(1.0)
+                        status_text.text("아키텍처 설계 검증 중...")
+                        validation_container.markdown("### 설계 검증 결과 및 개선 제안")
+                        validation_container.write(status["validation_result"])
+                        status_text.text("아키텍처 설계 검증 완료")
 
                 status_text.text("AWS 아키텍처 설계 완료!")
         except Exception as e:
