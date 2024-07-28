@@ -55,7 +55,7 @@ AWS Architect Agent는 AWS 솔루션 설계를 자동화하고 시각화하는 �
 
 1. `app.py`를 실행하여 Streamlit 앱을 시작합니다:
     ```bash
-    streamlit run app.py
+    streamlit run src/app.py
     ```
 
 2. 웹 브라우저에서 Streamlit 앱에 접속하여 사용할 모델을 선택합니다.
