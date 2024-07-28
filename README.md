@@ -5,6 +5,8 @@
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.37.0-green)
 ![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)
 
+![Preview](assets/preview.png)
+
 AWS Architect Agent는 AWS 솔루션 설계를 자동화하고 시각화하는 대화형 AI 도구입니다. 사용자의 요구사항을 바탕으로 최적의 AWS 아키텍처를 설계하고, 이를 diagram-as-code YAML 형식으로 생성한 후 시각적 다이어그램으로 표현합니다.
 
 ![Workflow Graph](assets/graph.png)
