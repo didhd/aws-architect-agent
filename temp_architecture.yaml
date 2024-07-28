@@ -17,65 +17,90 @@ Diagram:
       Align: center
       Children:
         - VPC
+        - EKS
     VPC:
       Type: AWS::EC2::VPC
-      Direction: horizontal
+      Direction: vertical
       Children:
-        - CognitoStack
-        - APIGatewayStack
-        - DynamoDBStack
-    CognitoStack:
-      Type: AWS::Diagram::VerticalStack
+        - VPCPublicStack
+        - VPCPrivateStack
+    VPCPublicStack:
+      Type: AWS::Diagram::HorizontalStack
       Children:
-        - Cognito
-    Cognito:
-      Type: AWS::Cognito::UserPool
-      Preset: User Pool
-    APIGatewayStack:
-      Type: AWS::Diagram::VerticalStack
+        - VPCPublicSubnet1
+        - VPCPublicSubnet2
+    VPCPublicSubnet1:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+    VPCPublicSubnet2:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+    VPCPrivateStack:
+      Type: AWS::Diagram::HorizontalStack
       Children:
-        - APIGateway
-        - Lambda
-    APIGateway:
-      Type: AWS::ApiGateway::RestApi
-      Preset: API Gateway
-    Lambda:
-      Type: AWS::Lambda::Function
-      Preset: Lambda
-    DynamoDBStack:
-      Type: AWS::Diagram::VerticalStack
+        - VPCPrivateSubnet1
+        - VPCPrivateSubnet2
+    VPCPrivateSubnet1:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+    VPCPrivateSubnet2:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+    EKS:
+      Type: AWS::EKS::Cluster
+      Direction: vertical
       Children:
-        - DynamoDB
-    DynamoDB:
-      Type: AWS::DynamoDB::Table
-      Preset: DynamoDB
-
+        - EKSNode1
+        - EKSNode2
+    EKSNode1:
+      Type: AWS::Diagram::Resource
+      Preset: EC2Instance
+    EKSNode2:
+      Type: AWS::Diagram::Resource
+      Preset: EC2Instance
+    ALB:
+      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+      Preset: Application Load Balancer
+    IGW:
+      Type: AWS::EC2::InternetGateway
     User:
       Type: AWS::Diagram::Resource
       Preset: User
 
   Links:
-    - Source: User
+    - Source: ALB
+      SourcePosition: NNW
+      Target: VPCPublicSubnet1
+      TargetPosition: SSE
+      TargetArrowHead:
+        Type: Open
+    - Source: ALB
+      SourcePosition: NNE
+      Target: VPCPublicSubnet2
+      TargetPosition: SSW
+      TargetArrowHead:
+        Type: Open
+    - Source: IGW
       SourcePosition: N
-      Target: Cognito
+      Target: ALB
       TargetPosition: S
       TargetArrowHead:
         Type: Open
-    - Source: Cognito
-      SourcePosition: E
-      Target: APIGateway
-      TargetPosition: W
+    - Source: User
+      SourcePosition: N
+      Target: IGW
+      TargetPosition: S
       TargetArrowHead:
         Type: Open
-    - Source: APIGateway
-      SourcePosition: E
-      Target: Lambda
-      TargetPosition: W
+    - Source: EKSNode1
+      SourcePosition: W
+      Target: VPCPrivateSubnet1
+      TargetPosition: E
       TargetArrowHead:
         Type: Open
-    - Source: Lambda
+    - Source: EKSNode2
       SourcePosition: E
-      Target: DynamoDB
+      Target: VPCPrivateSubnet2
       TargetPosition: W
       TargetArrowHead:
         Type: Open
